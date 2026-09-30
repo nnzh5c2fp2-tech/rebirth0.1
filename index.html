@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#08090d">
+  <title>Перерождение: Начало</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div>
+      <div class="game-title">ПЕРЕРОЖДЕНИЕ</div>
+      <div class="subtitle">НАЧАЛО</div>
+    </div>
+
+  </header>
+
+  <main>
+    <section id="screen-character" class="screen active">
+      <div class="panel hero-card">
+        <div class="avatar" id="avatar">?</div>
+        <div class="hero-info">
+          <h2 id="playerName">Пробуждённый</h2>
+          <div class="class-line"><span id="className">Не выбран</span> · <b id="rankName">F</b></div>
+          <div class="level-line">Уровень <b id="level">1</b></div>
+          <div class="xp"><div id="xpBar"></div></div>
+          <div class="xp-text"><span id="xpText">0</span> / <span id="xpNeed">12000</span> XP</div>
+          <div class="resource-mini energy-mini"><span>⚡</span><b><span id="heroEnergy">100</span> / <span id="heroEnergyMax">100</span></b><small>ЭНЕРГИЯ</small></div>
+        </div>
+      </div>
+
+      <div id="classSelection" class="panel">
+        <div class="section-title">ВЫБЕРИ ПУТЬ</div>
+        <div class="classes">
+          <button class="class-card" data-class="assassin"><span class="emoji-icon">☠️</span><b>Ассасин</b><small>Критический урон · уклонение</small></button>
+          <button class="class-card" data-class="mage"><span class="emoji-icon">🔮</span><b>Чародей</b><small>Магия · высокий урон</small></button>
+          <button class="class-card" data-class="paladin"><span class="emoji-icon">🛡️</span><b>Паладин</b><small>Защита · регенерация</small></button>
+          <button class="class-card" data-class="archer"><span class="emoji-icon">🏹</span><b>Лучник</b><small>Дальность · скорость</small></button>
+        </div>
+      </div>
+
+      <div id="statsPanel" class="panel hidden">
+        <div class="section-title stat-head"><span>ХАРАКТЕРИСТИКИ</span></div>
+        <div class="derived-grid">
+          <div><span>⚔ АТАКА</span><b id="statAtk">0</b></div>
+          <div><span>❤ HP</span><b id="statHp">0</b></div>
+          <div><span>🛡 ЗАЩИТА</span><b id="statDef">0</b></div>
+          <div><span>◈ ВЫНОСЛИВОСТЬ</span><b id="statStamina">0</b></div>
+        </div>
+      </div>
+
+      <div id="allocationPanel" class="panel stat-allocation hidden">
+        <button class="allocation-head" type="button" onclick="toggleAllocation()" aria-expanded="true">
+          <div>
+            <div class="section-title">ОСНОВНЫЕ <span id="allocationArrow">⌃</span></div>
+            <small>Распредели очки персонажа</small>
+          </div>
+          <div class="points-badge">ОЧКИ <b id="statPoints">0</b></div>
+        </button>
+        <div class="stat-list" id="flatStats"></div>
+        <div class="alloc-title">БОЕВЫЕ %</div>
+        <div class="stat-list" id="percentStats"></div>
+      </div>
+      <div id="currencyPanel" class="panel currency-panel hidden">
+        <div class="section-title">ВАЛЮТА</div>
+        <div class="hero-currencies">
+          <div class="hero-currency gold-currency"><span class="emoji-icon small">🪙</span><div><small>ЗОЛОТО</small><b id="heroGold">0</b></div></div>
+          <div class="hero-currency shadow-currency"><span class="emoji-icon small">🌑</span><div><small>ТЕНЕВЫЕ МОНЕТЫ</small><b id="shadowCoins">0</b></div></div>
+        </div>
+      </div>
+
+      <div id="evolutionPanel" class="panel hidden">
+        <div class="section-title">ЭВОЛЮЦИЯ — УРОВЕНЬ 20</div>
+        <div id="evolutionChoices" class="evolutions"></div>
+      </div>
+    </section>
+
+    <section id="screen-dungeons" class="screen">
+      <div class="screen-heading"><span>ПОДЗЕМЕЛЬЯ</span><small>⚡ <b id="energy">100</b> / <b id="energyMax">100</b> · вход 5 энергии</small></div>
+      <div id="dungeonRanks" class="dungeon-ranks"></div><div id="dungeonList" class="dungeon-list"></div>
+    </section>
+
+    <section id="screen-association" class="screen">
+      <div class="screen-heading"><span>АССОЦИАЦИЯ</span><small>Повышение ранга</small></div>
+      <div class="panel rank-card">
+        <div class="rank-big" id="associationRank">F</div>
+        <div>
+          <h2 id="nextRankTitle">Следующий ранг: E</h2>
+          <p>Победи босса текущего ранга и собери необходимое количество монет.</p>
+        </div>
+      </div>
+      <div id="rankRequirements" class="panel requirements"></div>
+      <button id="rankUpBtn" class="primary-btn">ПРОЙТИ ИСПЫТАНИЕ</button>
+    </section>
+
+    <section id="screen-more" class="screen">
+      <div class="screen-heading"><span>ЕЩЁ</span><small>Меню игрока</small></div>
+
+      <div class="more-currencies">
+        <div class="more-currency gold-currency">
+          <span class="emoji-icon small">🪙</span><div><small>ЗОЛОТО</small><b id="moreGold">0</b></div>
+        </div>
+        <div class="more-currency shadow-currency">
+          <span class="emoji-icon small">🌑</span><div><small>ТЕНЕВЫЕ МОНЕТЫ</small><b id="moreShadowCoins">0</b></div>
+        </div>
+      </div>
+
+      <div class="more-grid">
+        <button class="more-card" onclick="openSubscreen('inventory')"><i class="notice-dot" id="notice-inventory"></i><span class="emoji-icon">🎒</span><b>Инвентарь</b><small>Предметы и добыча</small></button>
+        <button class="more-card" onclick="openSubscreen('equipment')"><i class="notice-dot" id="notice-equipment"></i><span class="emoji-icon">⚔️</span><b>Экипировка</b><small>Оружие и броня</small></button>
+        <button class="more-card" onclick="openSubscreen('quests')"><i class="notice-dot" id="notice-quests"></i><span class="emoji-icon">📜</span><b>Задания</b><small>Ежедневные и сюжетные</small></button>
+        <button class="more-card" onclick="openSubscreen('shop')"><span class="emoji-icon">🛒</span><b>Магазин</b><small>Теневые монеты и Premium</small></button>
+        <button class="more-card" onclick="openSubscreen('bazaar')"><span class="emoji-icon">🏪</span><b>Базар</b><small>Продажа снаряжения и лута</small></button>
+        <button class="more-card" onclick="openSubscreen('mail')"><i class="notice-dot" id="notice-mail"></i><span class="emoji-icon">📨</span><b>Почта</b><small>Системные уведомления и сообщения</small></button>
+        <button class="more-card" onclick="openSubscreen('farm')"><span class="emoji-icon">🌾</span><b>Фарм-зона</b><small>∞ мобы · 500 XP · 100–300 🪙</small></button>
+        <button class="more-card" onclick="openSubscreen('rating')"><span class="emoji-icon">🏆</span><b>Рейтинг</b><small>Игроки по уровню</small></button>
+        <button class="more-card" onclick="openSubscreen('arena')"><span class="emoji-icon">⚔️</span><b>Арена</b><small>5 боёв в день · PvP</small></button>
+        <button class="more-card" onclick="openSubscreen('settings')"><span class="emoji-icon">⚙️</span><b>Настройки</b><small>Параметры игры</small></button>
+      </div>
+
+    </section>
+
+    <section id="screen-sub" class="screen">
+      <div class="subscreen-header">
+        <button class="sub-back" onclick="closeSubscreen()">← НАЗАД</button>
+        <span id="subscreenTitle">РАЗДЕЛ</span>
+      </div>
+      <div id="subscreenContent" class="panel subscreen-content"></div>
+    </section>
+
+    <section id="screen-battle" class="screen">
+      <div class="battle-header">
+        <button id="leaveBattle" class="back-btn">← ВЫЙТИ</button>
+        <span id="battleDungeonName">ПОДЗЕМЕЛЬЕ</span>
+        <span id="battleFloor">1/1</span>
+      </div>
+
+      <div class="battlefield panel">
+        <div class="fighter">
+          <div class="fighter-label">ТЫ</div>
+          <div class="fighter-sprite player-sprite" id="battlePlayerSprite">🧙</div>
+          <div class="hpbar"><div id="playerHpBar"></div></div>
+          <div class="hptext"><span id="battlePlayerHp">0</span> / <span id="battlePlayerMaxHp">0</span> HP</div>
+          <div class="battle-resource-label">💧 МАНА</div>
+          <div class="manabar"><div id="battlePlayerManaBar"></div></div>
+          <div class="hptext"><span id="battlePlayerMana">0</span> / <span id="battlePlayerMaxMana">0</span></div>
+        </div>
+        <div class="vs">VS</div>
+        <div class="fighter">
+          <div class="fighter-label" id="enemyName">МОНСТР</div>
+          <div class="fighter-sprite enemy-sprite" id="enemySprite">👹</div>
+          <div class="hpbar"><div id="enemyHpBar"></div></div>
+          <div class="hptext"><span id="enemyHp">0</span> / <span id="enemyMaxHp">0</span></div>
+        </div>
+      </div>
+
+      <div id="battleLog" class="battle-log"></div>
+
+      <div class="actions">
+        <button id="attackBtn" class="action-btn attack"><span class="btn-emoji">⚔️</span><span>ОБЫЧНАЯ АТАКА</span></button>
+        <button id="skillBtn" class="action-btn skill"><span class="btn-emoji">✨</span><span id="skillName">НАВЫК</span></button>
+        <button onclick="autoBattle()" class="secondary-btn">⚡ АВТО-БОЙ</button><button id="healBtn" class="action-btn heal"><span class="btn-emoji">💚</span><span>ЛЕЧЕНИЕ</span></button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-screen="character" class="nav-btn active">♙<span>ГЕРОЙ</span></button>
+    <button data-screen="dungeons" class="nav-btn">♜<span>ПОДЗЕМЕЛЬЯ</span></button>
+    <button data-screen="association" class="nav-btn">✦<span>АССОЦИАЦИЯ</span></button>
+    <button data-screen="more" class="nav-btn"><i class="notice-dot nav-notice" id="notice-more"></i>☰<span>ЕЩЁ</span></button>
+  </nav>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <div id="modalIcon">✦</div>
+    <h2 id="modalTitle">Пробуждение</h2>
+    <p id="modalText"></p>
+    <button id="modalClose" class="primary-btn">ПРОДОЛЖИТЬ</button>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
